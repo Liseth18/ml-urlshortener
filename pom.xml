@@ -43,21 +43,4 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<build>
-		<plugins>
-
-		</plugins>
-	</build>
-
-	<repositories>
-		<repository>
-			<id>netflix-candidates</id>
-			<name>Netflix Candidates</name>
-			<urlShortener>https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates</urlShortener>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 </project>

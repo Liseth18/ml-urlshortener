@@ -19,6 +19,4 @@ public interface UrlShortenerService {
 
     UrlShortenerDto findByUrlShort(String urlShort);
 
-    String encodeUrl(String url);
-
 }

@@ -60,20 +60,20 @@ public class UrlShortenerController {
     }
 
     @Operation(
-            summary = "Get Url information by Id",
-            description = "Get a Url object by specifying its id. The response is Url object with id, urlOrigin, urlShort and active."
+            summary = "Get Url information by Url Short",
+            description = "Get a Url object by specifying its urlShort. The response is Url object with id, urlOrigin, urlShort, active, creationDate, updateDate."
             )
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = UrlShortener.class), mediaType = "application/json") }),
             @ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
             @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable(value="id") BigInteger id){
+    @GetMapping("/{urlShort}")
+    public ResponseEntity<?> findByUrlShort(@PathVariable(value="urlShort") String urlShort){
         try{
-            log.info("Get URL by id: {}", id);
-            return ResponseEntity.ok(urlShortenerService.findById(id));
+            log.info("Get URL by urlShort: {}", urlShort);
+            return ResponseEntity.ok(urlShortenerService.findByUrlShort(urlShort));
         }catch (Exception ex){
-            log.error("ERROR - Get URL by id: {}. {}",id, ex.getMessage(), ex);
+            log.error("ERROR - Get URL by urlShort: {}. {}",urlShort, ex.getMessage(), ex);
             return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -133,9 +133,6 @@ public class UrlShortenerController {
             }
             urlExist.setUrlOrigin(url.getUrlOrigin());
             return ResponseEntity.ok(urlShortenerService.update(urlExist));
-        }catch (NotFoundException ex){
-            log.error("URL not found (urlShort: {})", urlShort);
-            return new ResponseEntity<Object>(NOT_FOUND, HttpStatus.NOT_FOUND);
         }catch (Exception ex){
             log.error("ERROR - update url (urlShort: {}). {}", urlShort, ex.getMessage(), ex);
             return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -160,9 +157,6 @@ public class UrlShortenerController {
             UrlShortenerDto urlExist = urlShortenerService.findByUrlShort(urlShort);
             urlExist.setActive(active);
             return ResponseEntity.ok(urlShortenerService.update(urlExist));
-        }catch (NotFoundException ex){
-            log.error(ex.getMessage());
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }catch (Exception ex){
             log.error("ERROR - enable/disable url (urlShort: {} - enable: {}). {}", urlShort, active, ex.getMessage(), ex);
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -186,15 +180,11 @@ public class UrlShortenerController {
             log.info("Redirect url (urlShort: {})", urlShort);
             UrlShortenerDto url = urlShortenerService.findByUrlShort(urlShort);
             if (!url.getActive()) {
-                log.info("URL is not active (urlShort: {})", urlShort);
-                return new ResponseEntity<Object>("URL is not active", HttpStatus.BAD_REQUEST);
+                log.info("URL is disabled (urlShort: {})", urlShort);
+                return new ResponseEntity<Object>("URL is disabled", HttpStatus.BAD_REQUEST);
             }
-
             response.sendRedirect(url.getUrlOrigin());
             return ResponseEntity.ok(null);
-        }catch (NotFoundException ex){
-            log.error("URL not found (urlShort: {})", urlShort);
-            return new ResponseEntity<Object>(NOT_FOUND, HttpStatus.NOT_FOUND);
         }catch (Exception ex){
             log.error("ERROR - redirect url (urlShort: {}). {}", urlShort, ex.getMessage(), ex);
             return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

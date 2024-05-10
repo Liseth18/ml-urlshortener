@@ -64,16 +64,16 @@ public class UrlShortenerControllerTest {
     }
 
     @Test
-    public void testFindById() throws Exception {
+    public void testFindByUrlShort() throws Exception {
 
-        when(urlShortenerService.findById(BigInteger.ONE)).thenReturn(newUrlDto());
+        when(urlShortenerService.findByUrlShort(any())).thenReturn(newUrlDto());
 
-        mvc.perform(get("/api/v1/urlshortener/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/v1/urlshortener/1234567").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.urlShort").value("1234567"));
+                .andExpect(jsonPath("$.id").value("1"));
 
-        verify(urlShortenerService).findById(BigInteger.ONE);
+        verify(urlShortenerService).findByUrlShort(newUrlDto().getUrlShort());
     }
 
     @Test

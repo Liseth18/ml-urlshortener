@@ -72,7 +72,11 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     @Override
     public UrlShortenerDto findById(BigInteger id){
         log.info("URL - findById: {}", id);
-        return mapToUrlResponse(urlShortenerRepository.findById(id));
+        UrlShortener urlShortener = urlShortenerRepository.findById(id);
+        if(urlShortener == null){
+            throw new NotFoundException("Url not found id: "+ id);
+        }
+        return mapToUrlResponse(urlShortener);
     }
 
     @Cacheable(value="Url", key="#urlShort")
@@ -86,6 +90,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         return mapToUrlResponse(urlShortener);
     }
 
+    /*
+     Generation of the short URL
+    */
     public String encodeUrl(String url){
         String encodedUrl = "";
         LocalDateTime time = LocalDateTime.now();
@@ -95,6 +102,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         return  encodedUrl;
     }
 
+    /*
+     Map or convert UrlShortener model to DTO
+    */
     public UrlShortenerDto mapToUrlResponse(UrlShortener urlShortener){
         return UrlShortenerDto.builder()
                 .id(urlShortener.getId())
